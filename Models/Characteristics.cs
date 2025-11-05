@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace CharactersOfCthulhu.Models
+﻿namespace CharactersOfCthulhu.Models
 {
     //Represents the eight core characteristics of an investigator
     public class Characteristics
