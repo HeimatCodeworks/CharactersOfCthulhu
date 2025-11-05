@@ -21,5 +21,10 @@ namespace CharactersOfCthulhu.ViewModels
 
             await Shell.Current.GoToAsync($"StatsPage?method={method}");
         }
+        [RelayCommand]
+        private async Task GoBack()
+        {
+            await Shell.Current.GoToAsync("..");
+        }
     }
 }

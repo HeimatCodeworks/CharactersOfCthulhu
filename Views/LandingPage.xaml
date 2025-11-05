@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodels="clr-namespace:CharactersOfCthulhu.ViewModels"
+             x:DataType="viewmodels:LandingPageViewModel"
+             x:Class="CharactersOfCthulhu.Views.LandingPage"
+             Title="Characters of Cthulhu">
+
+    <VerticalStackLayout 
+        VerticalOptions="Center"
+        HorizontalOptions="Center"
+        Spacing="20">
+
+        <Label 
+            Text="Characters of Cthulhu"
+            FontSize="28"
+            FontAttributes="Bold"
+            HorizontalOptions="Center" />
+
+        <Button 
+            Text="Create New Character"
+            Command="{Binding GoToCreateNewCommand}"
+            WidthRequest="250" />
+
+        <Button 
+            Text="Load Existing Character"
+            Command="{Binding GoToLoadCommand}"
+            WidthRequest="250" />
+
+    </VerticalStackLayout>
+</ContentPage>

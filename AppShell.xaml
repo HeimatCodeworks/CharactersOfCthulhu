@@ -9,7 +9,7 @@
 
     <ShellContent
         Title="Home"
-        ContentTemplate="{DataTemplate views:MethodSelectionPage}"
-        Route="MethodSelectionPage" />
+        ContentTemplate="{DataTemplate views:LandingPage}"
+        Route="LandingPage" />
 
 </Shell>

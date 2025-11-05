@@ -2,15 +2,32 @@
 using CommunityToolkit.Mvvm.Input;
 using System.Threading.Tasks;
 using System;
+using System.ComponentModel;
 
 namespace CharactersOfCthulhu.ViewModels
 {
-
     [QueryProperty(nameof(SelectedMethod), "method")]
     public partial class StatsViewModel : ObservableObject
     {
         [ObservableProperty]
         private string _selectedMethod;
+
+
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(RemainingPoints))]
+        private int _distributablePointPool;
+
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(RemainingPoints))]
+        private int _totalPointsAllocated;
+
+        private int _totalMinimumCost;
+
+        public int RemainingPoints => DistributablePointPool - TotalPointsAllocated;
+
+        public bool IsPointBuyMode => SelectedMethod?.Contains("PointBuy") ?? false;
+
+        private int _minStr, _minCon, _minSiz, _minDex, _minApp, _minInt, _minPow, _minEdu;
 
         [ObservableProperty]
         private int _strength;
@@ -36,107 +53,141 @@ namespace CharactersOfCthulhu.ViewModels
         [ObservableProperty]
         private int _education;
 
-        private readonly Random _random = new();
 
         public StatsViewModel()
         {
         }
 
-        #region Dice Rolling Logic
+        #region Property Changed Handlers
 
-        private int Roll3D6x5()
+        partial void OnSelectedMethodChanged(string value)
         {
-            int roll = _random.Next(1, 7) + _random.Next(1, 7) + _random.Next(1, 7);
-            return roll * 5;
+            OnPropertyChanged(nameof(IsPointBuyMode));
+            InitializePointBuy();
         }
 
-        private int Roll2D6Plus6x5()
+        private void InitializePointBuy()
         {
-            int roll = _random.Next(1, 7) + _random.Next(1, 7) + 6;
-            return roll * 5;
+            if (SelectedMethod == "ClassicPointBuy")
+            {
+                _minStr = _minCon = _minDex = _minApp = _minPow = 15;
+                _minSiz = _minInt = _minEdu = 40;
+                _totalMinimumCost = 195; // (5 * 15) + (3 * 40)
+                DistributablePointPool = 265; // 460 - 195
+            }
+            else if (SelectedMethod == "PulpPointBuy")
+            {
+                _minStr = _minCon = _minSiz = _minDex = _minApp = _minInt = _minPow = _minEdu = 15;
+                _totalMinimumCost = 120; // (8 * 15)
+                DistributablePointPool = 430; // 550 - 120
+            }
+            else if (SelectedMethod == "Freeform")
+            {
+                _minStr = _minCon = _minSiz = _minDex = _minApp = _minInt = _minPow = _minEdu = 0;
+                _totalMinimumCost = 0;
+                DistributablePointPool = 1500;
+            }
+
+            ResetStats();
         }
 
-        private int Roll3D6Plus3x5()
+        private void UpdateAllocatedPoints()
         {
-            int roll = _random.Next(1, 7) + _random.Next(1, 7) + _random.Next(1, 7) + 3;
-            return roll * 5;
+            int totalValue = Strength + Constitution + Size + Dexterity +
+                             Appearance + Intelligence + Power + Education;
+
+            TotalPointsAllocated = totalValue - _totalMinimumCost;
         }
+
+        partial void OnStrengthChanged(int value) => UpdateAllocatedPoints();
+        partial void OnConstitutionChanged(int value) => UpdateAllocatedPoints();
+        partial void OnSizeChanged(int value) => UpdateAllocatedPoints();
+        partial void OnDexterityChanged(int value) => UpdateAllocatedPoints();
+        partial void OnAppearanceChanged(int value) => UpdateAllocatedPoints();
+        partial void OnIntelligenceChanged(int value) => UpdateAllocatedPoints();
+        partial void OnPowerChanged(int value) => UpdateAllocatedPoints();
+        partial void OnEducationChanged(int value) => UpdateAllocatedPoints();
 
         #endregion
 
-        #region Main Commands
+        #region Commands
 
         [RelayCommand]
-        private void RollStats()
+        private void ModifyStatFixed(string parameter)
         {
-            if (SelectedMethod == "ClassicRoll" || SelectedMethod == "PulpRoll")
+            if (string.IsNullOrEmpty(parameter)) return;
+
+            var parts = parameter.Split(',');
+            if (parts.Length != 2) return;
+
+            string characteristic = parts[0];
+            if (!int.TryParse(parts[1], out int amount)) return;
+
+            if (amount > 0 && RemainingPoints < amount)
             {
-                RollAllStats();
+                return;
             }
-            else
+            int maxStat = (SelectedMethod == "Freeform") ? int.MaxValue : 90;
+
+            switch (characteristic)
             {
-                //Set defaults
-                Strength = 50;
-                Constitution = 50;
-                Size = 50;
-                Dexterity = 50;
-                Appearance = 50;
-                Intelligence = 50;
-                Power = 50;
-                Education = 50;
+                case "Strength":
+                    Strength = Math.Clamp(Strength + amount, _minStr, maxStat);
+                    break;
+                case "Constitution":
+                    Constitution = Math.Clamp(Constitution + amount, _minCon, maxStat);
+                    break;
+                case "Size":
+                    Size = Math.Clamp(Size + amount, _minSiz, maxStat);
+                    break;
+                case "Dexterity":
+                    Dexterity = Math.Clamp(Dexterity + amount, _minDex, maxStat);
+                    break;
+                case "Appearance":
+                    Appearance = Math.Clamp(Appearance + amount, _minApp, maxStat);
+                    break;
+                case "Intelligence":
+                    Intelligence = Math.Clamp(Intelligence + amount, _minInt, maxStat);
+                    break;
+                case "Power":
+                    Power = Math.Clamp(Power + amount, _minPow, maxStat);
+                    break;
+                case "Education":
+                    Education = Math.Clamp(Education + amount, _minEdu, maxStat);
+                    break;
             }
         }
 
-        private void RollAllStats()
+        [RelayCommand]
+        private void ResetStats()
         {
-            Strength = Roll3D6x5();
-            Constitution = Roll3D6x5();
-            Dexterity = Roll3D6x5();
-            Appearance = Roll3D6x5();
-            Power = Roll3D6x5();
-
-            Intelligence = Roll2D6Plus6x5();
-            Size = Roll2D6Plus6x5();
-
-            Education = Roll3D6Plus3x5();
+            Strength = _minStr;
+            Constitution = _minCon;
+            Size = _minSiz;
+            Dexterity = _minDex;
+            Appearance = _minApp;
+            Intelligence = _minInt;
+            Power = _minPow;
+            Education = _minEdu;
         }
-
 
         [RelayCommand]
         private async Task GoToSkillsPage()
         {
-            // await Shell.Current.GoToAsync("SkillsPage");
+            if (RemainingPoints != 0)
+            {
+                await Shell.Current.DisplayAlert("Validation Error", $"You must allocate all {DistributablePointPool} distributable points. You have {RemainingPoints} points remaining.", "OK");
+                return;
+            }
 
             await Shell.Current.DisplayAlert("Navigation", "Proceeding to Skills Page (Not Yet Implemented)", "OK");
         }
 
-        #endregion
-
-        #region Individual Re-roll Commands
-
         [RelayCommand]
-        private void RollStrength() => Strength = Roll3D6x5();
-
-        [RelayCommand]
-        private void RollConstitution() => Constitution = Roll3D6x5();
-
-        [RelayCommand]
-        private void RollSize() => Size = Roll2D6Plus6x5();
-
-        [RelayCommand]
-        private void RollDexterity() => Dexterity = Roll3D6x5();
-
-        [RelayCommand]
-        private void RollAppearance() => Appearance = Roll3D6x5();
-
-        [RelayCommand]
-        private void RollIntelligence() => Intelligence = Roll2D6Plus6x5();
-
-        [RelayCommand]
-        private void RollPower() => Power = Roll3D6x5();
-
-        [RelayCommand]
-        private void RollEducation() => Education = Roll3D6Plus3x5();
+        private async Task GoBack()
+        {
+            await Shell.Current.GoToAsync("..");
+        }
 
         #endregion
     }
