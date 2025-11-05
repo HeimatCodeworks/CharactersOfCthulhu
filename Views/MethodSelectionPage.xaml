@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodels="clr-namespace:CharactersOfCthulhu.ViewModels"
+             x:DataType="viewmodels:MethodSelectionViewModel"
+             x:Class="CharactersOfCthulhu.Views.MethodSelectionPage"
+             Title="Characters of Cthulhu - New Investigator">
+
+    <VerticalStackLayout Spacing="10" Padding="20" VerticalOptions="Center">
+
+        <Label 
+            Text="Select Creation Method"
+            FontSize="24"
+            FontAttributes="Bold"
+            HorizontalOptions="Center" />
+
+        <Button 
+            Text="Classic (Roll Stats)"
+            Command="{Binding SelectMethodCommand}"
+            CommandParameter="ClassicRoll" />
+
+        <Button 
+            Text="Classic (Point-Buy)"
+            Command="{Binding SelectMethodCommand}"
+            CommandParameter="ClassicPointBuy" />
+
+        <Button 
+            Text="Pulp (Roll Stats)"
+            Command="{Binding SelectMethodCommand}"
+            CommandParameter="PulpRoll" />
+
+        <Button 
+            Text="Pulp (Point-Buy)"
+            Command="{Binding SelectMethodCommand}"
+            CommandParameter="PulpPointBuy" />
+
+        <Button 
+            Text="Freeform (Manual Entry)"
+            Command="{Binding SelectMethodCommand}"
+            CommandParameter="Freeform" />
+
+    </VerticalStackLayout>
+</ContentPage>

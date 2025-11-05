@@ -1,25 +1,29 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using CharactersOfCthulhu;
+using CharactersOfCthulhu.ViewModels;
+using CharactersOfCthulhu.Views;
+using CommunityToolkit.Maui;
 
-namespace CharactersOfCthulhu
+public static class MauiProgram
 {
-    public static class MauiProgram
+    public static MauiApp CreateMauiApp()
     {
-        public static MauiApp CreateMauiApp()
-        {
-            var builder = MauiApp.CreateBuilder();
-            builder
-                .UseMauiApp<App>()
-                .ConfigureFonts(fonts =>
-                {
-                    fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
-                    fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
-                });
+        var builder = MauiApp.CreateBuilder();
+        builder
+            .UseMauiApp<App>()
 
-#if DEBUG
-    		builder.Logging.AddDebug();
-#endif
+            .UseMauiCommunityToolkit()
+            .ConfigureFonts(fonts =>
+            {
+                fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
+                fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
+            });
 
-            return builder.Build();
-        }
+        builder.Services.AddTransient<MethodSelectionViewModel>();
+        builder.Services.AddTransient<MethodSelectionPage>();
+
+        builder.Services.AddTransient<StatsViewModel>();
+        builder.Services.AddTransient<StatsPage>();
+
+        return builder.Build();
     }
 }
