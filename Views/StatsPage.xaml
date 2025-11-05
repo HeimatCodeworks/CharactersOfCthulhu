@@ -16,41 +16,48 @@
                 HorizontalOptions="Center" />
 
             <Grid
-                ColumnDefinitions="*,*"
+                ColumnDefinitions="*,*,Auto"
                 RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto"
                 ColumnSpacing="10"
                 RowSpacing="5">
 
                 <Label Grid.Row="0" Grid.Column="0" Text="Characteristic" FontAttributes="Bold" />
                 <Label Grid.Row="0" Grid.Column="1" Text="Value" FontAttributes="Bold" HorizontalOptions="Center" />
-
                 <Label Grid.Row="1" Grid.Column="0" Text="Strength (STR)" VerticalOptions="Center" />
                 <Entry Grid.Row="1" Grid.Column="1" Text="{Binding Strength}" Keyboard="Numeric" HorizontalTextAlignment="Center" />
+                <Button Grid.Row="1" Grid.Column="2" Text="Roll" Command="{Binding RollStrengthCommand}" />
 
                 <Label Grid.Row="2" Grid.Column="0" Text="Constitution (CON)" VerticalOptions="Center" />
                 <Entry Grid.Row="2" Grid.Column="1" Text="{Binding Constitution}" Keyboard="Numeric" HorizontalTextAlignment="Center" />
+                <Button Grid.Row="2" Grid.Column="2" Text="Roll" Command="{Binding RollConstitutionCommand}" />
 
                 <Label Grid.Row="3" Grid.Column="0" Text="Size (SIZ)" VerticalOptions="Center" />
                 <Entry Grid.Row="3" Grid.Column="1" Text="{Binding Size}" Keyboard="Numeric" HorizontalTextAlignment="Center" />
+                <Button Grid.Row="3" Grid.Column="2" Text="Roll" Command="{Binding RollSizeCommand}" />
 
                 <Label Grid.Row="4" Grid.Column="0" Text="Dexterity (DEX)" VerticalOptions="Center" />
                 <Entry Grid.Row="4" Grid.Column="1" Text="{Binding Dexterity}" Keyboard="Numeric" HorizontalTextAlignment="Center" />
+                <Button Grid.Row="4" Grid.Column="2" Text="Roll" Command="{Binding RollDexterityCommand}" />
 
                 <Label Grid.Row="5" Grid.Column="0" Text="Appearance (APP)" VerticalOptions="Center" />
                 <Entry Grid.Row="5" Grid.Column="1" Text="{Binding Appearance}" Keyboard="Numeric" HorizontalTextAlignment="Center" />
+                <Button Grid.Row="5" Grid.Column="2" Text="Roll" Command="{Binding RollAppearanceCommand}" />
 
                 <Label Grid.Row="6" Grid.Column="0" Text="Intelligence (INT)" VerticalOptions="Center" />
                 <Entry Grid.Row="6" Grid.Column="1" Text="{Binding Intelligence}" Keyboard="Numeric" HorizontalTextAlignment="Center" />
+                <Button Grid.Row="6" Grid.Column="2" Text="Roll" Command="{Binding RollIntelligenceCommand}" />
 
                 <Label Grid.Row="7" Grid.Column="0" Text="Power (POW)" VerticalOptions="Center" />
                 <Entry Grid.Row="7" Grid.Column="1" Text="{Binding Power}" Keyboard="Numeric" HorizontalTextAlignment="Center" />
+                <Button Grid.Row="7" Grid.Column="2" Text="Roll" Command="{Binding RollPowerCommand}" />
 
                 <Label Grid.Row="8" Grid.Column="0" Text="Education (EDU)" VerticalOptions="Center" />
                 <Entry Grid.Row="8" Grid.Column="1" Text="{Binding Education}" Keyboard="Numeric" HorizontalTextAlignment="Center" />
+                <Button Grid.Row="8" Grid.Column="2" Text="Roll" Command="{Binding RollEducationCommand}" />
             </Grid>
 
             <Button 
-                Text="Roll Stats"
+                Text="Roll All Stats"
                 Command="{Binding RollStatsCommand}"
                 Margin="0,20,0,0" />
 

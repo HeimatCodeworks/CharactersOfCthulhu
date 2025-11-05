@@ -1,10 +1,12 @@
-﻿namespace CharactersOfCthulhu
+﻿using CharactersOfCthulhu.Views;
+
+namespace CharactersOfCthulhu;
+
+public partial class AppShell : Shell
 {
-    public partial class AppShell : Shell
+    public AppShell()
     {
-        public AppShell()
-        {
-            InitializeComponent();
-        }
+        InitializeComponent();
+        Routing.RegisterRoute(nameof(StatsPage), typeof(StatsPage));
     }
 }

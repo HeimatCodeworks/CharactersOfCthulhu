@@ -12,9 +12,4 @@
         ContentTemplate="{DataTemplate views:MethodSelectionPage}"
         Route="MethodSelectionPage" />
 
-    <ShellContent
-        Title="Stats"
-        ContentTemplate="{DataTemplate views:StatsPage}"
-        Route="StatsPage" />
-
 </Shell>
