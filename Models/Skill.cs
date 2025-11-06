@@ -1,12 +1,17 @@
-﻿namespace CharactersOfCthulhu.Models
+﻿using System;
+
+namespace CharactersOfCthulhu.Models
 {
-    //Represents a single investigator skill.
     public class Skill
     {
         public string Name { get; set; }
+        public string Category { get; set; }
         public int BaseValue { get; set; }
-        public int AllocatedPoints {  get; set; }
-        public int TotalValue => BaseValue + AllocatedPoints;
-        public bool IsOccupational { get; set; }
+
+        public Era AvailableInEra { get; set; } = Era.All;
+
+        public string BaseValueDependsOn { get; set; } = null;
+
+        public Func<int, int> BaseValueCalculation { get; set; } = val => val;
     }
 }

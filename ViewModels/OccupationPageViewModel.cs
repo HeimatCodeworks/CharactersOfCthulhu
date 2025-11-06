@@ -1,6 +1,7 @@
 ﻿using CharactersOfCthulhu.Models;
 using CharactersOfCthulhu.Repositories;
 using CharactersOfCthulhu.Services;
+using CharactersOfCthulhu.Views;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System.Collections.ObjectModel;
@@ -50,10 +51,17 @@ namespace CharactersOfCthulhu.ViewModels
                 return;
             }
 
-            _investigator.Occupation = SelectedOccupation.Name;
-
-
-            await Shell.Current.DisplayAlert("Navigation", "Proceeding to Skills Page (Not Yet Implemented)", "OK");
+            if (SelectedOccupation.Name == "Create Custom Occupation")
+            {
+                // This will now work
+                await Shell.Current.GoToAsync(nameof(CustomOccupationPage));
+            }
+            else
+            {
+                _investigator.Occupation = SelectedOccupation;
+                // This will now work
+                await Shell.Current.GoToAsync($"//{nameof(SkillsPage)}");
+            }
         }
 
         [RelayCommand]

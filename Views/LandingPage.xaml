@@ -17,15 +17,13 @@
             FontAttributes="Bold"
             HorizontalOptions="Center" />
 
-        <Button 
-            Text="Create New Character"
-            Command="{Binding GoToCreateNewCommand}"
-            WidthRequest="250" />
+        <Button Grid.Row="1" 
+                    Text="Create New Investigator" 
+                    Command="{Binding GoToCreatePageCommand}" HorizontalOptions="FillAndExpand" />
 
-        <Button 
-            Text="Load Existing Character"
-            Command="{Binding GoToLoadCommand}"
-            WidthRequest="250" />
+        <Button Grid.Row="2" 
+                        Text="Load Investigator" 
+                        Command="{Binding GoToLoadPageCommand}" HorizontalOptions="FillAndExpand" />
 
     </VerticalStackLayout>
 </ContentPage>

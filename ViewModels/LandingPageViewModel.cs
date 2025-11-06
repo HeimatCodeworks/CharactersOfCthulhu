@@ -1,7 +1,7 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CharactersOfCthulhu.Views;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System.Threading.Tasks;
-using CharactersOfCthulhu.Views;
 
 namespace CharactersOfCthulhu.ViewModels
 {
@@ -9,18 +9,19 @@ namespace CharactersOfCthulhu.ViewModels
     {
         public LandingPageViewModel()
         {
+
         }
 
         [RelayCommand]
-        private async Task GoToCreateNew()
+        private async Task GoToCreatePage()
         {
-            await Shell.Current.GoToAsync(nameof(MethodSelectionPage));
+            await Shell.Current.GoToAsync(nameof(EraPage));
         }
 
         [RelayCommand]
-        private async Task GoToLoad()
+        private async Task GoToLoadPage()
         {
-            await Shell.Current.DisplayAlert("Not Implemented", "Loading characters will be implemented in a future step.", "OK");
+            await Shell.Current.DisplayAlert("Load", "Load investigator not yet implemented.", "OK");
         }
     }
 }

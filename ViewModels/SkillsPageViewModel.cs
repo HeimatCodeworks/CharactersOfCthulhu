@@ -1,29 +1,23 @@
 ﻿using CharactersOfCthulhu.Services;
-using CharactersOfCthulhu.Views;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System.Threading.Tasks;
 
 namespace CharactersOfCthulhu.ViewModels
 {
-    public partial class MethodSelectionViewModel : ObservableObject
+    public partial class SkillsPageViewModel : ObservableObject
     {
         private readonly CharacterCreationService _characterService;
 
-        public MethodSelectionViewModel(CharacterCreationService characterService)
+        public SkillsPageViewModel(CharacterCreationService characterService)
         {
             _characterService = characterService;
         }
 
         [RelayCommand]
-        private async Task SelectMethod(string method)
+        private async Task GoToNextPage()
         {
-            if (string.IsNullOrEmpty(method))
-                return;
-
-            _characterService.StartCreationProcess(method);
-
-            await Shell.Current.GoToAsync(nameof(StatsPage));
+            await Shell.Current.DisplayAlert("Next Page", "Skills saved (not implemented).", "OK");
         }
 
         [RelayCommand]

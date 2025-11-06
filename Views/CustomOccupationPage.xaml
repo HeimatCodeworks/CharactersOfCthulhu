@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:models="clr-namespace:CharactersOfCthulhu.Models"
+             xmlns:viewmodels="clr-namespace:CharactersOfCthulhu.ViewModels"
+             x:DataType="viewmodels:CustomOccupationPageViewModel"
+             x:Class="CharactersOfCthulhu.Views.CustomOccupationPage"
+             Title="Custom Occupation">
+
+    <Grid RowDefinitions="*,Auto">
+
+        <ScrollView Grid.Row="0">
+            <VerticalStackLayout Padding="20" Spacing="15">
+
+                <Label Text="Define Custom Occupation" FontSize="22" FontAttributes="Bold" />
+
+                <Label Text="Occupation Name" />
+                <Entry Text="{Binding CustomOccupation.Name}" Placeholder="e.g., Daring Archeologist" />
+
+                <Label Text="Skill Point Formula" />
+                <HorizontalStackLayout Spacing="5">
+                    <Label Text="EDU x 2   +" VerticalOptions="Center" />
+                    <Picker ItemsSource="{Binding CharacteristicChoices}"
+                            SelectedItem="{Binding SelectedFormulaCharacteristic}"
+                            Title="Select Stat" />
+                    <Label Text="x 2" VerticalOptions="Center" />
+                </HorizontalStackLayout>
+                <Label Text="{Binding SkillPointFormulaDisplay}" FontSize="12" />
+
+
+                <Label Text="Credit Rating Range" />
+                <Entry Text="{Binding CustomOccupation.CreditRatingRange}" Placeholder="e.g., 20-60" />
+
+                <Label Text="{Binding SelectedSkillsCountDisplay}" FontAttributes="Bold" />
+                <Label Text="Select exactly 8 occupational skills." FontSize="12" />
+
+                <CollectionView ItemsSource="{Binding AllSkills}"
+                                SelectionMode="Multiple"
+                                SelectedItems="{Binding SelectedSkills}"
+                                HeightRequest="400">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="models:Skill">
+                            <VerticalStackLayout Padding="10,5">
+                                <Label Text="{Binding Name}" />
+                                <Label Text="{Binding Category}" FontSize="10" />
+                            </VerticalStackLayout>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <Grid Grid.Row="1" ColumnDefinitions="*,*" Padding="10">
+            <Button Grid.Column="0"
+                    Text="Back"
+                    Command="{Binding GoBackCommand}"
+                    HorizontalOptions="Start" />
+            <Button Grid.Column="1"
+                    Text="Next"
+                    Command="{Binding GoToSkillsPageCommand}"
+                    HorizontalOptions="End" />
+        </Grid>
+    </Grid>
+</ContentPage>

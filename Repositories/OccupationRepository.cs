@@ -3,13 +3,20 @@ using System.Collections.Generic;
 
 namespace CharactersOfCthulhu.Repositories
 {
-
     public static class OccupationRepository
     {
+        private static Occupation CustomOccupationOption = new Occupation
+        {
+            Name = "Create Custom Occupation",
+            Description = "Define your own occupation, skills, and credit rating.",
+            SkillPointFormula = "Custom",
+            CreditRatingRange = "Custom",
+            Skills = new List<string>()
+        };
 
         public static List<Occupation> GetClassicOccupations()
         {
-            return new List<Occupation>
+            var list = new List<Occupation>
             {
                 new Occupation
                 {
@@ -47,10 +54,14 @@ namespace CharactersOfCthulhu.Repositories
                     }
                 }
             };
+
+            list.Add(CustomOccupationOption);
+            return list;
         }
+
         public static List<Occupation> GetPulpOccupations()
         {
-            return new List<Occupation>
+            var list = new List<Occupation>
             {
                 new Occupation
                 {
@@ -87,6 +98,9 @@ namespace CharactersOfCthulhu.Repositories
                     }
                 }
             };
+
+            list.Add(CustomOccupationOption);
+            return list;
         }
     }
 }

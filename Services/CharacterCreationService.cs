@@ -2,19 +2,18 @@
 
 namespace CharactersOfCthulhu.Services
 {
-
     public class CharacterCreationService
     {
- 
         public BaseInvestigator CurrentInvestigator { get; private set; }
 
         public string SelectedMethod { get; private set; }
 
-        public void StartNewCharacter(string method)
-        {
-            SelectedMethod = method;
+        public Era SelectedEra { get; set; } = Era.Classic1920s;
 
-            if (method.Contains("Pulp"))
+        public void StartCreationProcess(string methodName)
+        {
+            SelectedMethod = methodName;
+            if (methodName.Contains("Pulp"))
             {
                 CurrentInvestigator = new PulpHero();
             }
@@ -22,12 +21,10 @@ namespace CharactersOfCthulhu.Services
             {
                 CurrentInvestigator = new ClassicInvestigator();
             }
+
+            CurrentInvestigator.Era = SelectedEra;
         }
 
-        public void ClearCharacter()
-        {
-            CurrentInvestigator = null;
-            SelectedMethod = null;
-        }
+        public bool IsPulp { get; set; }
     }
 }
