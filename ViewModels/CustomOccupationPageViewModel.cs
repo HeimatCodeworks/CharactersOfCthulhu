@@ -4,10 +4,7 @@ using CharactersOfCthulhu.Services;
 using CharactersOfCthulhu.Views;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace CharactersOfCthulhu.ViewModels
 {
@@ -59,9 +56,18 @@ namespace CharactersOfCthulhu.ViewModels
         public void Initialize()
         {
             var era = _characterService.SelectedEra;
-            AllSkills = new ObservableCollection<Skill>(
-                SkillRepository.GetSkills().Where(s => s.AvailableInEra.HasFlag(era))
-            );
+            var selectedMethod = _characterService.SelectedMethod;
+
+            var skillsQuery = SkillRepository.GetSkills().AsQueryable();
+
+            skillsQuery = skillsQuery.Where(s => s.AvailableInEra.HasFlag(era));
+
+            if (!selectedMethod.Contains("Freeform"))
+            {
+                skillsQuery = skillsQuery.Where(s => s.Name != "Cthulhu Mythos");
+            }
+
+            AllSkills = new ObservableCollection<Skill>(skillsQuery.ToList());
         }
 
         partial void OnSelectedFormulaCharacteristicChanged(string value)

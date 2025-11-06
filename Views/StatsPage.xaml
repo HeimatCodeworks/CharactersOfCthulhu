@@ -4,251 +4,211 @@
              xmlns:viewmodels="clr-namespace:CharactersOfCthulhu.ViewModels"
              x:DataType="viewmodels:StatsViewModel"
              x:Class="CharactersOfCthulhu.Views.StatsPage"
-             Title="Characteristics">
+             Title="Generate Characteristics">
 
-    <ScrollView>
-        <VerticalStackLayout Spacing="10" Padding="20">
+    <ContentPage.Resources>
+        <Style x:Key="StatButton" TargetType="Button">
+            <Setter Property="WidthRequest" Value="45" />
+            <Setter Property="FontSize" Value="14" />
+        </Style>
+        <Style x:Key="StatEntry" TargetType="Entry">
+            <Setter Property="WidthRequest" Value="60" />
+            <Setter Property="HorizontalTextAlignment" Value="Center" />
+            <Setter Property="FontSize" Value="18" />
+        </Style>
+    </ContentPage.Resources>
 
-            <Label 
-                Text="Characteristics"
-                FontSize="24"
-                FontAttributes="Bold"
-                HorizontalOptions="Center" />
+    <Grid RowDefinitions="*,Auto">
 
-            <VerticalStackLayout 
-                IsVisible="{Binding IsPointBuyMode}"
-                Spacing="10">
+        <ScrollView Grid.Row="0">
+            <VerticalStackLayout Padding="20" Spacing="10">
 
-                <Border StrokeThickness="1" Padding="10">
-                    <VerticalStackLayout Spacing="5">
-                        <Label Text="Point-Buy Allocation" FontAttributes="Bold" />
-                        <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto">
-                            <Label Grid.Row="0" Grid.Column="0" Text="Distributable Points:" />
-                            <Label Grid.Row="0" Grid.Column="1" Text="{Binding DistributablePointPool}" />
+                <VerticalStackLayout IsVisible="{Binding IsRollMethod}" Spacing="10">
+                    <Label Text="Rolled Stats" FontSize="22" FontAttributes="Bold" />
+                    <Button Text="Reroll All Stats" Command="{Binding RollStatsCommand}" />
 
-                            <Label Grid.Row="1" Grid.Column="0" Text="Remaining Points:" />
-                            <Label Grid.Row="1" Grid.Column="1" Text="{Binding RemainingPoints}" 
-                                   FontAttributes="Bold" />
-                        </Grid>
-                    </VerticalStackLayout>
-                </Border>
+                    <Grid ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto"
+                          Padding="10,20" RowSpacing="5" ColumnSpacing="10" VerticalOptions="Center">
 
-                <Grid
-                    ColumnDefinitions="*, Auto, Auto, 60, Auto, Auto"
-                    RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto"
-                    ColumnSpacing="5"
-                    RowSpacing="5">
+                        <Label Grid.Row="0" Grid.Column="0" Text="STR" VerticalOptions="Center" />
+                        <Entry Grid.Row="0" Grid.Column="1" Text="{Binding Str}" IsReadOnly="True" Style="{StaticResource StatEntry}" HorizontalOptions="Center" />
+                        <Button Grid.Row="0" Grid.Column="2" Text="Reroll" Command="{Binding RerollStatCommand}" CommandParameter="STR" />
 
-                    <Label Grid.Row="0" Grid.Column="0" Text="Strength" VerticalOptions="Center" />
-                    <Button Grid.Row="0" Grid.Column="1" Text="-5" Command="{Binding ModifyStatFixedCommand}" CommandParameter="Strength,-5" />
-                    <Button Grid.Row="0" Grid.Column="2" Text="-1" Command="{Binding ModifyStatFixedCommand}" CommandParameter="Strength,-1" />
-                    <Entry Grid.Row="0" Grid.Column="3" Text="{Binding Strength}" Keyboard="Numeric" HorizontalTextAlignment="Center" IsReadOnly="True" />
-                    <Button Grid.Row="0" Grid.Column="4" Text="+1" Command="{Binding ModifyStatFixedCommand}" CommandParameter="Strength,1" />
-                    <Button Grid.Row="0" Grid.Column="5" Text="+5" Command="{Binding ModifyStatFixedCommand}" CommandParameter="Strength,5" />
+                        <Label Grid.Row="1" Grid.Column="0" Text="CON" VerticalOptions="Center" />
+                        <Entry Grid.Row="1" Grid.Column="1" Text="{Binding Con}" IsReadOnly="True" Style="{StaticResource StatEntry}" HorizontalOptions="Center" />
+                        <Button Grid.Row="1" Grid.Column="2" Text="Reroll" Command="{Binding RerollStatCommand}" CommandParameter="CON" />
 
-                    <Label Grid.Row="1" Grid.Column="0" Text="Constitution" VerticalOptions="Center" />
-                    <Button Grid.Row="1" Grid.Column="1" Text="-5" Command="{Binding ModifyStatFixedCommand}" CommandParameter="Constitution,-5" />
-                    <Button Grid.Row="1" Grid.Column="2" Text="-1" Command="{Binding ModifyStatFixedCommand}" CommandParameter="Constitution,-1" />
-                    <Entry Grid.Row="1" Grid.Column="3" Text="{Binding Constitution}" Keyboard="Numeric" HorizontalTextAlignment="Center" IsReadOnly="True" />
-                    <Button Grid.Row="1" Grid.Column="4" Text="+1" Command="{Binding ModifyStatFixedCommand}" CommandParameter="Constitution,1" />
-                    <Button Grid.Row="1" Grid.Column="5" Text="+5" Command="{Binding ModifyStatFixedCommand}" CommandParameter="Constitution,5" />
+                        <Label Grid.Row="2" Grid.Column="0" Text="SIZ" VerticalOptions="Center" />
+                        <Entry Grid.Row="2" Grid.Column="1" Text="{Binding Siz}" IsReadOnly="True" Style="{StaticResource StatEntry}" HorizontalOptions="Center" />
+                        <Button Grid.Row="2" Grid.Column="2" Text="Reroll" Command="{Binding RerollStatCommand}" CommandParameter="SIZ" />
 
-                    <Label Grid.Row="2" Grid.Column="0" Text="Size" VerticalOptions="Center" />
-                    <Button Grid.Row="2" Grid.Column="1" Text="-5" Command="{Binding ModifyStatFixedCommand}" CommandParameter="Size,-5" />
-                    <Button Grid.Row="2" Grid.Column="2" Text="-1" Command="{Binding ModifyStatFixedCommand}" CommandParameter="Size,-1" />
-                    <Entry Grid.Row="2" Grid.Column="3" Text="{Binding Size}" Keyboard="Numeric" HorizontalTextAlignment="Center" IsReadOnly="True" />
-                    <Button Grid.Row="2" Grid.Column="4" Text="+1" Command="{Binding ModifyStatFixedCommand}" CommandParameter="Size,1" />
-                    <Button Grid.Row="2" Grid.Column="5" Text="+5" Command="{Binding ModifyStatFixedCommand}" CommandParameter="Size,5" />
+                        <Label Grid.Row="3" Grid.Column="0" Text="DEX" VerticalOptions="Center" />
+                        <Entry Grid.Row="3" Grid.Column="1" Text="{Binding Dex}" IsReadOnly="True" Style="{StaticResource StatEntry}" HorizontalOptions="Center" />
+                        <Button Grid.Row="3" Grid.Column="2" Text="Reroll" Command="{Binding RerollStatCommand}" CommandParameter="DEX" />
 
-                    <Label Grid.Row="3" Grid.Column="0" Text="Dexterity" VerticalOptions="Center" />
-                    <Button Grid.Row="3" Grid.Column="1" Text="-5" Command="{Binding ModifyStatFixedCommand}" CommandParameter="Dexterity,-5" />
-                    <Button Grid.Row="3" Grid.Column="2" Text="-1" Command="{Binding ModifyStatFixedCommand}" CommandParameter="Dexterity,-1" />
-                    <Entry Grid.Row="3" Grid.Column="3" Text="{Binding Dexterity}" Keyboard="Numeric" HorizontalTextAlignment="Center" IsReadOnly="True" />
-                    <Button Grid.Row="3" Grid.Column="4" Text="+1" Command="{Binding ModifyStatFixedCommand}" CommandParameter="Dexterity,1" />
-                    <Button Grid.Row="3" Grid.Column="5" Text="+5" Command="{Binding ModifyStatFixedCommand}" CommandParameter="Dexterity,5" />
+                        <Label Grid.Row="4" Grid.Column="0" Text="APP" VerticalOptions="Center" />
+                        <Entry Grid.Row="4" Grid.Column="1" Text="{Binding App}" IsReadOnly="True" Style="{StaticResource StatEntry}" HorizontalOptions="Center" />
+                        <Button Grid.Row="4" Grid.Column="2" Text="Reroll" Command="{Binding RerollStatCommand}" CommandParameter="APP" />
 
-                    <Label Grid.Row="4" Grid.Column="0" Text="Appearance" VerticalOptions="Center" />
-                    <Button Grid.Row="4" Grid.Column="1" Text="-5" Command="{Binding ModifyStatFixedCommand}" CommandParameter="Appearance,-5" />
-                    <Button Grid.Row="4" Grid.Column="2" Text="-1" Command="{Binding ModifyStatFixedCommand}" CommandParameter="Appearance,-1" />
-                    <Entry Grid.Row="4" Grid.Column="3" Text="{Binding Appearance}" Keyboard="Numeric" HorizontalTextAlignment="Center" IsReadOnly="True" />
-                    <Button Grid.Row="4" Grid.Column="4" Text="+1" Command="{Binding ModifyStatFixedCommand}" CommandParameter="Appearance,1" />
-                    <Button Grid.Row="4" Grid.Column="5" Text="+5" Command="{Binding ModifyStatFixedCommand}" CommandParameter="Appearance,5" />
+                        <Label Grid.Row="5" Grid.Column="0" Text="INT" VerticalOptions="Center" />
+                        <Entry Grid.Row="5" Grid.Column="1" Text="{Binding Int}" IsReadOnly="True" Style="{StaticResource StatEntry}" HorizontalOptions="Center" />
+                        <Button Grid.Row="5" Grid.Column="2" Text="Reroll" Command="{Binding RerollStatCommand}" CommandParameter="INT" />
 
-                    <Label Grid.Row="5" Grid.Column="0" Text="Intelligence" VerticalOptions="Center" />
-                    <Button Grid.Row="5" Grid.Column="1" Text="-5" Command="{Binding ModifyStatFixedCommand}" CommandParameter="Intelligence,-5" />
-                    <Button Grid.Row="5" Grid.Column="2" Text="-1" Command="{Binding ModifyStatFixedCommand}" CommandParameter="Intelligence,-1" />
-                    <Entry Grid.Row="5" Grid.Column="3" Text="{Binding Intelligence}" Keyboard="Numeric" HorizontalTextAlignment="Center" IsReadOnly="True" />
-                    <Button Grid.Row="5" Grid.Column="4" Text="+1" Command="{Binding ModifyStatFixedCommand}" CommandParameter="Intelligence,1" />
-                    <Button Grid.Row="5" Grid.Column="5" Text="+5" Command="{Binding ModifyStatFixedCommand}" CommandParameter="Intelligence,5" />
+                        <Label Grid.Row="6" Grid.Column="0" Text="POW" VerticalOptions="Center" />
+                        <Entry Grid.Row="6" Grid.Column="1" Text="{Binding Pow}" IsReadOnly="True" Style="{StaticResource StatEntry}" HorizontalOptions="Center" />
+                        <Button Grid.Row="6" Grid.Column="2" Text="Reroll" Command="{Binding RerollStatCommand}" CommandParameter="POW" />
 
-                    <Label Grid.Row="6" Grid.Column="0" Text="Power" VerticalOptions="Center" />
-                    <Button Grid.Row="6" Grid.Column="1" Text="-5" Command="{Binding ModifyStatFixedCommand}" CommandParameter="Power,-5" />
-                    <Button Grid.Row="6" Grid.Column="2" Text="-1" Command="{Binding ModifyStatFixedCommand}" CommandParameter="Power,-1" />
-                    <Entry Grid.Row="6" Grid.Column="3" Text="{Binding Power}" Keyboard="Numeric" HorizontalTextAlignment="Center" IsReadOnly="True" />
-                    <Button Grid.Row="6" Grid.Column="4" Text="+1" Command="{Binding ModifyStatFixedCommand}" CommandParameter="Power,1" />
-                    <Button Grid.Row="6" Grid.Column="5" Text="+5" Command="{Binding ModifyStatFixedCommand}" CommandParameter="Power,5" />
+                        <Label Grid.Row="7" Grid.Column="0" Text="EDU" VerticalOptions="Center" />
+                        <Entry Grid.Row="7" Grid.Column="1" Text="{Binding Edu}" IsReadOnly="True" Style="{StaticResource StatEntry}" HorizontalOptions="Center" />
+                        <Button Grid.Row="7" Grid.Column="2" Text="Reroll" Command="{Binding RerollStatCommand}" CommandParameter="EDU" />
+                    </Grid>
 
-                    <Label Grid.Row="7" Grid.Column="0" Text="Education" VerticalOptions="Center" />
-                    <Button Grid.Row="7" Grid.Column="1" Text="-5" Command="{Binding ModifyStatFixedCommand}" CommandParameter="Education,-5" />
-                    <Button Grid.Row="7" Grid.Column="2" Text="-1" Command="{Binding ModifyStatFixedCommand}" CommandParameter="Education,-1" />
-                    <Entry Grid.Row="7" Grid.Column="3" Text="{Binding Education}" Keyboard="Numeric" HorizontalTextAlignment="Center" IsReadOnly="True" />
-                    <Button Grid.Row="7" Grid.Column="4" Text="+1" Command="{Binding ModifyStatFixedCommand}" CommandParameter="Education,1" />
-                    <Button Grid.Row="7" Grid.Column="5" Text="+5" Command="{Binding ModifyStatFixedCommand}" CommandParameter="Education,5" />
-                </Grid>
+                    <Label Text="Derived Stats" FontSize="20" FontAttributes="Bold" Margin="0,20,0,0" />
+                    <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto"
+                          ColumnSpacing="10" Padding="10,0">
+                        <Label Grid.Row="0" Grid.Column="0" Text="HP (Hit Points)" VerticalOptions="Center" />
+                        <Entry Grid.Row="0" Grid.Column="1" Text="{Binding Hp}" IsReadOnly="True" />
 
-                <Button 
-                    Text="Reset to Minimums"
-                    Command="{Binding ResetStatsToMinimumCommand}"
-                    Margin="0,20,0,0" />
+                        <Label Grid.Row="1" Grid.Column="0" Text="MP (Magic Points)" VerticalOptions="Center" />
+                        <Entry Grid.Row="1" Grid.Column="1" Text="{Binding Mp}" IsReadOnly="True" />
+
+                        <Label Grid.Row="2" Grid.Column="0" Text="Sanity" VerticalOptions="Center" />
+                        <Entry Grid.Row="2" Grid.Column="1" Text="{Binding Sanity}" IsReadOnly="True" />
+
+                        <Label Grid.Row="3" Grid.Column="0" Text="Luck" VerticalOptions="Center" />
+                        <Entry Grid.Row="3" Grid.Column="1" Text="{Binding Luck}" IsReadOnly="True" />
+                    </Grid>
+
+                </VerticalStackLayout>
+
+                <VerticalStackLayout IsVisible="{Binding IsEditableMethod}" Spacing="10">
+
+                    <Label Text="{Binding PointBuyTitle}" FontSize="22" FontAttributes="Bold" />
+                    <Label IsVisible="{Binding IsPointBuyMethod}" Text="Spend points to raise stats. Max 90." />
+                    <Label IsVisible="{Binding IsFreeformMethod}" Text="Spend points to raise stats. No maximum." />
+
+                    <Label>
+                        <Label.FormattedText>
+                            <FormattedString>
+                                <Span Text="Points Remaining: " />
+                                <Span Text="{Binding DistributablePoints}" FontAttributes="Bold" />
+                            </FormattedString>
+                        </Label.FormattedText>
+                    </Label>
+                    <Label Text="{Binding PointBuyError}" TextColor="Red" />
+
+                    <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto"
+                          RowSpacing="5" ColumnSpacing="10" VerticalOptions="Center">
+
+                        <Label Grid.Row="0" Grid.Column="0" Text="STR" VerticalOptions="Center" />
+                        <HorizontalStackLayout Grid.Row="0" Grid.Column="1" Spacing="5">
+                            <Button Text="-5" Command="{Binding ModifyStatCommand}" CommandParameter="STR,-5" Style="{StaticResource StatButton}" />
+                            <Button Text="-1" Command="{Binding ModifyStatCommand}" CommandParameter="STR,-1" Style="{StaticResource StatButton}" />
+                            <Entry Text="{Binding Str}" IsReadOnly="True" Style="{StaticResource StatEntry}" />
+                            <Button Text="+1" Command="{Binding ModifyStatCommand}" CommandParameter="STR,+1" Style="{StaticResource StatButton}" />
+                            <Button Text="+5" Command="{Binding ModifyStatCommand}" CommandParameter="STR,+5" Style="{StaticResource StatButton}" />
+                        </HorizontalStackLayout>
+
+                        <Label Grid.Row="1" Grid.Column="0" Text="CON" VerticalOptions="Center" />
+                        <HorizontalStackLayout Grid.Row="1" Grid.Column="1" Spacing="5">
+                            <Button Text="-5" Command="{Binding ModifyStatCommand}" CommandParameter="CON,-5" Style="{StaticResource StatButton}" />
+                            <Button Text="-1" Command="{Binding ModifyStatCommand}" CommandParameter="CON,-1" Style="{StaticResource StatButton}" />
+                            <Entry Text="{Binding Con}" IsReadOnly="True" Style="{StaticResource StatEntry}" />
+                            <Button Text="+1" Command="{Binding ModifyStatCommand}" CommandParameter="CON,+1" Style="{StaticResource StatButton}" />
+                            <Button Text="+5" Command="{Binding ModifyStatCommand}" CommandParameter="CON,+5" Style="{StaticResource StatButton}" />
+                        </HorizontalStackLayout>
+
+                        <Label Grid.Row="2" Grid.Column="0" Text="SIZ" VerticalOptions="Center" />
+                        <HorizontalStackLayout Grid.Row="2" Grid.Column="1" Spacing="5">
+                            <Button Text="-5" Command="{Binding ModifyStatCommand}" CommandParameter="SIZ,-5" Style="{StaticResource StatButton}" />
+                            <Button Text="-1" Command="{Binding ModifyStatCommand}" CommandParameter="SIZ,-1" Style="{StaticResource StatButton}" />
+                            <Entry Text="{Binding Siz}" IsReadOnly="True" Style="{StaticResource StatEntry}" />
+                            <Button Text="+1" Command="{Binding ModifyStatCommand}" CommandParameter="SIZ,+1" Style="{StaticResource StatButton}" />
+                            <Button Text="+5" Command="{Binding ModifyStatCommand}" CommandParameter="SIZ,+5" Style="{StaticResource StatButton}" />
+                        </HorizontalStackLayout>
+
+                        <Label Grid.Row="3" Grid.Column="0" Text="DEX" VerticalOptions="Center" />
+                        <HorizontalStackLayout Grid.Row="3" Grid.Column="1" Spacing="5">
+                            <Button Text="-5" Command="{Binding ModifyStatCommand}" CommandParameter="DEX,-5" Style="{StaticResource StatButton}" />
+                            <Button Text="-1" Command="{Binding ModifyStatCommand}" CommandParameter="DEX,-1" Style="{StaticResource StatButton}" />
+                            <Entry Text="{Binding Dex}" IsReadOnly="True" Style="{StaticResource StatEntry}" />
+                            <Button Text="+1" Command="{Binding ModifyStatCommand}" CommandParameter="DEX,+1" Style="{StaticResource StatButton}" />
+                            <Button Text="+5" Command="{Binding ModifyStatCommand}" CommandParameter="DEX,+5" Style="{StaticResource StatButton}" />
+                        </HorizontalStackLayout>
+
+                        <Label Grid.Row="4" Grid.Column="0" Text="APP" VerticalOptions="Center" />
+                        <HorizontalStackLayout Grid.Row="4" Grid.Column="1" Spacing="5">
+                            <Button Text="-5" Command="{Binding ModifyStatCommand}" CommandParameter="APP,-5" Style="{StaticResource StatButton}" />
+                            <Button Text="-1" Command="{Binding ModifyStatCommand}" CommandParameter="APP,-1" Style="{StaticResource StatButton}" />
+                            <Entry Text="{Binding App}" IsReadOnly="True" Style="{StaticResource StatEntry}" />
+                            <Button Text="+1" Command="{Binding ModifyStatCommand}" CommandParameter="APP,+1" Style="{StaticResource StatButton}" />
+                            <Button Text="+5" Command="{Binding ModifyStatCommand}" CommandParameter="APP,+5" Style="{StaticResource StatButton}" />
+                        </HorizontalStackLayout>
+
+                        <Label Grid.Row="5" Grid.Column="0" Text="INT" VerticalOptions="Center" />
+                        <HorizontalStackLayout Grid.Row="5" Grid.Column="1" Spacing="5">
+                            <Button Text="-5" Command="{Binding ModifyStatCommand}" CommandParameter="INT,-5" Style="{StaticResource StatButton}" />
+                            <Button Text="-1" Command="{Binding ModifyStatCommand}" CommandParameter="INT,-1" Style="{StaticResource StatButton}" />
+                            <Entry Text="{Binding Int}" IsReadOnly="True" Style="{StaticResource StatEntry}" />
+                            <Button Text="+1" Command="{Binding ModifyStatCommand}" CommandParameter="INT,+1" Style="{StaticResource StatButton}" />
+                            <Button Text="+5" Command="{Binding ModifyStatCommand}" CommandParameter="INT,+5" Style="{StaticResource StatButton}" />
+                        </HorizontalStackLayout>
+
+                        <Label Grid.Row="6" Grid.Column="0" Text="POW" VerticalOptions="Center" />
+                        <HorizontalStackLayout Grid.Row="6" Grid.Column="1" Spacing="5">
+                            <Button Text="-5" Command="{Binding ModifyStatCommand}" CommandParameter="POW,-5" Style="{StaticResource StatButton}" />
+                            <Button Text="-1" Command="{Binding ModifyStatCommand}" CommandParameter="POW,-1" Style="{StaticResource StatButton}" />
+                            <Entry Text="{Binding Pow}" IsReadOnly="True" Style="{StaticResource StatEntry}" />
+                            <Button Text="+1" Command="{Binding ModifyStatCommand}" CommandParameter="POW,+1" Style="{StaticResource StatButton}" />
+                            <Button Text="+5" Command="{Binding ModifyStatCommand}" CommandParameter="POW,+5" Style="{StaticResource StatButton}" />
+                        </HorizontalStackLayout>
+
+                        <Label Grid.Row="7" Grid.Column="0" Text="EDU" VerticalOptions="Center" />
+                        <HorizontalStackLayout Grid.Row="7" Grid.Column="1" Spacing="5">
+                            <Button Text="-5" Command="{Binding ModifyStatCommand}" CommandParameter="EDU,-5" Style="{StaticResource StatButton}" />
+                            <Button Text="-1" Command="{Binding ModifyStatCommand}" CommandParameter="EDU,-1" Style="{StaticResource StatButton}" />
+                            <Entry Text="{Binding Edu}" IsReadOnly="True" Style="{StaticResource StatEntry}" />
+                            <Button Text="+1" Command="{Binding ModifyStatCommand}" CommandParameter="EDU,+1" Style="{StaticResource StatButton}" />
+                            <Button Text="+5" Command="{Binding ModifyStatCommand}" CommandParameter="EDU,+5" Style="{StaticResource StatButton}" />
+                        </HorizontalStackLayout>
+
+                    </Grid>
+
+                    <Label Text="Derived Stats" FontSize="20" FontAttributes="Bold" Margin="0,20,0,0" />
+                    <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto"
+                          ColumnSpacing="10" Padding="10,0">
+                        <Label Grid.Row="0" Grid.Column="0" Text="HP (Hit Points)" VerticalOptions="Center" />
+                        <Entry Grid.Row="0" Grid.Column="1" Text="{Binding Hp}" IsReadOnly="True" />
+
+                        <Label Grid.Row="1" Grid.Column="0" Text="MP (Magic Points)" VerticalOptions="Center" />
+                        <Entry Grid.Row="1" Grid.Column="1" Text="{Binding Mp}" IsReadOnly="True" />
+
+                        <Label Grid.Row="2" Grid.Column="0" Text="Sanity" VerticalOptions="Center" />
+                        <Entry Grid.Row="2" Grid.Column="1" Text="{Binding Sanity}" IsReadOnly="True" />
+
+                        <Label Grid.Row="3" Grid.Column="0" Text="Luck" VerticalOptions="Center" />
+                        <Entry Grid.Row="3" Grid.Column="1" Text="{Binding Luck}" IsReadOnly="True" />
+                    </Grid>
+
+                </VerticalStackLayout>
+
             </VerticalStackLayout>
+        </ScrollView>
 
+        <Grid Grid.Row="1" 
+              ColumnDefinitions="*,*"
+              Padding="10">
 
-            <VerticalStackLayout 
-                IsVisible="{Binding IsRollMode}"
-                Spacing="10">
+            <Button Grid.Column="0"
+                    Text="Back"
+                    Command="{Binding GoBackCommand}"
+                    HorizontalOptions="Start" />
 
-                <Grid
-                    ColumnDefinitions="*,*,Auto"
-                    RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto"
-                    ColumnSpacing="10"
-                    RowSpacing="5">
+            <Button Grid.Column="1"
+                    Text="Next"
+                    Command="{Binding GoToNextPageCommand}"
+                    HorizontalOptions="End" />
+        </Grid>
+    </Grid>
 
-                    <Label Grid.Row="0" Grid.Column="0" Text="Strength (STR)" VerticalOptions="Center" />
-                    <Entry Grid.Row="0" Grid.Column="1" Text="{Binding Strength}" Keyboard="Numeric" HorizontalTextAlignment="Center" />
-                    <Button Grid.Row="0" Grid.Column="2" Text="Roll" Command="{Binding RollStrengthCommand}" />
-
-                    <Label Grid.Row="1" Grid.Column="0" Text="Constitution (CON)" VerticalOptions="Center" />
-                    <Entry Grid.Row="1" Grid.Column="1" Text="{Binding Constitution}" Keyboard="Numeric" HorizontalTextAlignment="Center" />
-                    <Button Grid.Row="1" Grid.Column="2" Text="Roll" Command="{Binding RollConstitutionCommand}" />
-
-                    <Label Grid.Row="2" Grid.Column="0" Text="Size (SIZ)" VerticalOptions="Center" />
-                    <Entry Grid.Row="2" Grid.Column="1" Text="{Binding Size}" Keyboard="Numeric" HorizontalTextAlignment="Center" />
-                    <Button Grid.Row="2" Grid.Column="2" Text="Roll" Command="{Binding RollSizeCommand}" />
-
-                    <Label Grid.Row="3" Grid.Column="0" Text="Dexterity (DEX)" VerticalOptions="Center" />
-                    <Entry Grid.Row="3" Grid.Column="1" Text="{Binding Dexterity}" Keyboard="Numeric" HorizontalTextAlignment="Center" />
-                    <Button Grid.Row="3" Grid.Column="2" Text="Roll" Command="{Binding RollDexterityCommand}" />
-
-                    <Label Grid.Row="4" Grid.Column="0" Text="Appearance (APP)" VerticalOptions="Center" />
-                    <Entry Grid.Row="4" Grid.Column="1" Text="{Binding Appearance}" Keyboard="Numeric" HorizontalTextAlignment="Center" />
-                    <Button Grid.Row="4" Grid.Column="2" Text="Roll" Command="{Binding RollAppearanceCommand}" />
-
-                    <Label Grid.Row="5" Grid.Column="0" Text="Intelligence (INT)" VerticalOptions="Center" />
-                    <Entry Grid.Row="5" Grid.Column="1" Text="{Binding Intelligence}" Keyboard="Numeric" HorizontalTextAlignment="Center" />
-                    <Button Grid.Row="5" Grid.Column="2" Text="Roll" Command="{Binding RollIntelligenceCommand}" />
-
-                    <Label Grid.Row="6" Grid.Column="0" Text="Power (POW)" VerticalOptions="Center" />
-                    <Entry Grid.Row="6" Grid.Column="1" Text="{Binding Power}" Keyboard="Numeric" HorizontalTextAlignment="Center" />
-                    <Button Grid.Row="6" Grid.Column="2" Text="Roll" Command="{Binding RollPowerCommand}" />
-
-                    <Label Grid.Row="7" Grid.Column="0" Text="Education (EDU)" VerticalOptions="Center" />
-                    <Entry Grid.Row="7" Grid.Column="1" Text="{Binding Education}" Keyboard="Numeric" HorizontalTextAlignment="Center" />
-                    <Button Grid.Row="7" Grid.Column="2" Text="Roll" Command="{Binding RollEducationCommand}" />
-                </Grid>
-
-                <Button 
-                    Text="Roll All Stats"
-                    Command="{Binding RollAllStatsCommand}"
-                    Margin="0,20,0,0" />
-            </VerticalStackLayout>
-
-            <VerticalStackLayout
-                IsVisible="{Binding IsFreeformMode}"
-                Spacing="10">
-
-                <Border StrokeThickness="1" Padding="10">
-                    <VerticalStackLayout Spacing="5">
-                        <Label Text="Freeform Entry" FontAttributes="Bold" />
-                        <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto">
-                            <Label Grid.Row="0" Grid.Column="0" Text="Max Total Points:" />
-                            <Label Grid.Row="0" Grid.Column="1" Text="{Binding DistributablePointPool}" />
-
-                            <Label Grid.Row="1" Grid.Column="0" Text="Remaining Points:" />
-                            <Label Grid.Row="1" Grid.Column="1" Text="{Binding RemainingPoints}" 
-                                   FontAttributes="Bold" />
-                        </Grid>
-                    </VerticalStackLayout>
-                </Border>
-
-                <Grid
-                    ColumnDefinitions="*, Auto, Auto, 60, Auto, Auto"
-                    RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto"
-                    ColumnSpacing="5"
-                    RowSpacing="5">
-
-                    <Label Grid.Row="0" Grid.Column="0" Text="Strength" VerticalOptions="Center" />
-                    <Button Grid.Row="0" Grid.Column="1" Text="-5" Command="{Binding ModifyStatFixedCommand}" CommandParameter="Strength,-5" />
-                    <Button Grid.Row="0" Grid.Column="2" Text="-1" Command="{Binding ModifyStatFixedCommand}" CommandParameter="Strength,-1" />
-                    <Entry Grid.Row="0" Grid.Column="3" Text="{Binding Strength}" Keyboard="Numeric" HorizontalTextAlignment="Center" IsReadOnly="True" />
-                    <Button Grid.Row="0" Grid.Column="4" Text="+1" Command="{Binding ModifyStatFixedCommand}" CommandParameter="Strength,1" />
-                    <Button Grid.Row="0" Grid.Column="5" Text="+5" Command="{Binding ModifyStatFixedCommand}" CommandParameter="Strength,5" />
-
-                    <Label Grid.Row="1" Grid.Column="0" Text="Constitution" VerticalOptions="Center" />
-                    <Button Grid.Row="1" Grid.Column="1" Text="-5" Command="{Binding ModifyStatFixedCommand}" CommandParameter="Constitution,-5" />
-                    <Button Grid.Row="1" Grid.Column="2" Text="-1" Command="{Binding ModifyStatFixedCommand}" CommandParameter="Constitution,-1" />
-                    <Entry Grid.Row="1" Grid.Column="3" Text="{Binding Constitution}" Keyboard="Numeric" HorizontalTextAlignment="Center" IsReadOnly="True" />
-                    <Button Grid.Row="1" Grid.Column="4" Text="+1" Command="{Binding ModifyStatFixedCommand}" CommandParameter="Constitution,1" />
-                    <Button Grid.Row="1" Grid.Column="5" Text="+5" Command="{Binding ModifyStatFixedCommand}" CommandParameter="Constitution,5" />
-
-                    <Label Grid.Row="2" Grid.Column="0" Text="Size" VerticalOptions="Center" />
-                    <Button Grid.Row="2" Grid.Column="1" Text="-5" Command="{Binding ModifyStatFixedCommand}" CommandParameter="Size,-5" />
-                    <Button Grid.Row="2" Grid.Column="2" Text="-1" Command="{Binding ModifyStatFixedCommand}" CommandParameter="Size,-1" />
-                    <Entry Grid.Row="2" Grid.Column="3" Text="{Binding Size}" Keyboard="Numeric" HorizontalTextAlignment="Center" IsReadOnly="True" />
-                    <Button Grid.Row="2" Grid.Column="4" Text="+1" Command="{Binding ModifyStatFixedCommand}" CommandParameter="Size,1" />
-                    <Button Grid.Row="2" Grid.Column="5" Text="+5" Command="{Binding ModifyStatFixedCommand}" CommandParameter="Size,5" />
-
-                    <Label Grid.Row="3" Grid.Column="0" Text="Dexterity" VerticalOptions="Center" />
-                    <Button Grid.Row="3" Grid.Column="1" Text="-5" Command="{Binding ModifyStatFixedCommand}" CommandParameter="Dexterity,-5" />
-                    <Button Grid.Row="3" Grid.Column="2" Text="-1" Command="{Binding ModifyStatFixedCommand}" CommandParameter="Dexterity,-1" />
-                    <Entry Grid.Row="3" Grid.Column="3" Text="{Binding Dexterity}" Keyboard="Numeric" HorizontalTextAlignment="Center" IsReadOnly="True" />
-                    <Button Grid.Row="3" Grid.Column="4" Text="+1" Command="{Binding ModifyStatFixedCommand}" CommandParameter="Dexterity,1" />
-                    <Button Grid.Row="3" Grid.Column="5" Text="+5" Command="{Binding ModifyStatFixedCommand}" CommandParameter="Dexterity,5" />
-
-                    <Label Grid.Row="4" Grid.Column="0" Text="Appearance" VerticalOptions="Center" />
-                    <Button Grid.Row="4" Grid.Column="1" Text="-5" Command="{Binding ModifyStatFixedCommand}" CommandParameter="Appearance,-5" />
-                    <Button Grid.Row="4" Grid.Column="2" Text="-1" Command="{Binding ModifyStatFixedCommand}" CommandParameter="Appearance,-1" />
-                    <Entry Grid.Row="4" Grid.Column="3" Text="{Binding Appearance}" Keyboard="Numeric" HorizontalTextAlignment="Center" IsReadOnly="True" />
-                    <Button Grid.Row="4" Grid.Column="4" Text="+1" Command="{Binding ModifyStatFixedCommand}" CommandParameter="Appearance,1" />
-                    <Button Grid.Row="4" Grid.Column="5" Text="+5" Command="{Binding ModifyStatFixedCommand}" CommandParameter="Appearance,5" />
-
-                    <Label Grid.Row="5" Grid.Column="0" Text="Intelligence" VerticalOptions="Center" />
-                    <Button Grid.Row="5" Grid.Column="1" Text="-5" Command="{Binding ModifyStatFixedCommand}" CommandParameter="Intelligence,-5" />
-                    <Button Grid.Row="5" Grid.Column="2" Text="-1" Command="{Binding ModifyStatFixedCommand}" CommandParameter="Intelligence,-1" />
-                    <Entry Grid.Row="5" Grid.Column="3" Text="{Binding Intelligence}" Keyboard="Numeric" HorizontalTextAlignment="Center" IsReadOnly="True" />
-                    <Button Grid.Row="5" Grid.Column="4" Text="+1" Command="{Binding ModifyStatFixedCommand}" CommandParameter="Intelligence,1" />
-                    <Button Grid.Row="5" Grid.Column="5" Text="+5" Command="{Binding ModifyStatFixedCommand}" CommandParameter="Intelligence,5" />
-
-                    <Label Grid.Row="6" Grid.Column="0" Text="Power" VerticalOptions="Center" />
-                    <Button Grid.Row="6" Grid.Column="1" Text="-5" Command="{Binding ModifyStatFixedCommand}" CommandParameter="Power,-5" />
-                    <Button Grid.Row="6" Grid.Column="2" Text="-1" Command="{Binding ModifyStatFixedCommand}" CommandParameter="Power,-1" />
-                    <Entry Grid.Row="6" Grid.Column="3" Text="{Binding Power}" Keyboard="Numeric" HorizontalTextAlignment="Center" IsReadOnly="True" />
-                    <Button Grid.Row="6" Grid.Column="4" Text="+1" Command="{Binding ModifyStatFixedCommand}" CommandParameter="Power,1" />
-                    <Button Grid.Row="6" Grid.Column="5" Text="+5" Command="{Binding ModifyStatFixedCommand}" CommandParameter="Power,5" />
-
-                    <Label Grid.Row="7" Grid.Column="0" Text="Education" VerticalOptions="Center" />
-                    <Button Grid.Row="7" Grid.Column="1" Text="-5" Command="{Binding ModifyStatFixedCommand}" CommandParameter="Education,-5" />
-                    <Button Grid.Row="7" Grid.Column="2" Text="-1" Command="{Binding ModifyStatFixedCommand}" CommandParameter="Education,-1" />
-                    <Entry Grid.Row="7" Grid.Column="3" Text="{Binding Education}" Keyboard="Numeric" HorizontalTextAlignment="Center" IsReadOnly="True" />
-                    <Button Grid.Row="7" Grid.Column="4" Text="+1" Command="{Binding ModifyStatFixedCommand}" CommandParameter="Education,1" />
-                    <Button Grid.Row="7" Grid.Column="5" Text="+5" Command="{Binding ModifyStatFixedCommand}" CommandParameter="Education,5" />
-                </Grid>
-
-                <Button 
-                    Text="Reset to 0"
-                    Command="{Binding ResetStatsToMinimumCommand}"
-                    Margin="0,20,0,0" />
-            </VerticalStackLayout>
-
-            <Button 
-                Text="Next: Occupation"
-                Command="{Binding GoToSkillsPageCommand}" 
-                Margin="0,10,0,0" />
-
-            <Button 
-                Text="Back"
-                Command="{Binding GoBackCommand}"
-                BackgroundColor="Gray" />
-
-        </VerticalStackLayout>
-    </ScrollView>
 </ContentPage>

@@ -1,7 +1,6 @@
 ﻿using CharactersOfCthulhu.Models;
 using CommunityToolkit.Mvvm.ComponentModel;
 using System.Collections.ObjectModel;
-using System.Linq;
 
 namespace CharactersOfCthulhu.ViewModels
 {

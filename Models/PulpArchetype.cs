@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace CharactersOfCthulhu.Models
+﻿namespace CharactersOfCthulhu.Models
 {
     public class PulpArchetype
     {

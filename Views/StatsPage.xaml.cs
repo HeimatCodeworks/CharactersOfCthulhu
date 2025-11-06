@@ -4,9 +4,18 @@ namespace CharactersOfCthulhu.Views;
 
 public partial class StatsPage : ContentPage
 {
-    public StatsPage(StatsViewModel viewModel)
+    private readonly StatsViewModel _vm;
+
+    public StatsPage(StatsViewModel vm)
     {
         InitializeComponent();
-        BindingContext = viewModel;
+        _vm = vm;
+        BindingContext = _vm;
+    }
+
+	protected override void OnAppearing()
+    {
+        base.OnAppearing();
+        _vm.Initialize();
     }
 }

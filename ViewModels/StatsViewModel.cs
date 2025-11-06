@@ -1,247 +1,364 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
-using System.Threading.Tasks;
-using System;
+﻿using CharactersOfCthulhu.Models;
 using CharactersOfCthulhu.Services;
-using CharactersOfCthulhu.Models;
 using CharactersOfCthulhu.Views;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 
 namespace CharactersOfCthulhu.ViewModels
 {
-    [QueryProperty(nameof(SelectedMethod), "method")]
     public partial class StatsViewModel : ObservableObject
     {
+        #region Fields
         private readonly CharacterCreationService _characterService;
         private BaseInvestigator _investigator;
-
-        [ObservableProperty]
         private string _selectedMethod;
+        private bool _isPulp;
+        private string _coreStat;
+        private Random _random = new Random();
 
-        public bool IsRollMode => SelectedMethod?.Contains("Roll") ?? false;
+        // Point Buy rule constants
+        private const int PULP_MIN = 40;
+        private const int PULP_MAX = 90;
+        private const int CLASSIC_MIN_LOW = 15;
+        private const int CLASSIC_MIN_HIGH = 40;
+        private const int CLASSIC_MAX = 90;
+        #endregion
 
-        public bool IsPointBuyMode => SelectedMethod?.Contains("PointBuy") ?? false;
-
-        public bool IsFreeformMode => SelectedMethod == "Freeform";
-
+        #region UI State Properties
         [ObservableProperty]
-        [NotifyPropertyChangedFor(nameof(RemainingPoints))]
-        private int _distributablePointPool;
-
-        [ObservableProperty]
-        [NotifyPropertyChangedFor(nameof(RemainingPoints))]
-        private int _totalPointsAllocated;
-
-        private int _totalMinimumCost;
-        public int RemainingPoints => DistributablePointPool - TotalPointsAllocated;
-        private int _minStr, _minCon, _minSiz, _minDex, _minApp, _minInt, _minPow, _minEdu;
+        private bool _isRollMethod;
 
         [ObservableProperty]
-        private int _strength;
-        [ObservableProperty]
-        private int _constitution;
-        [ObservableProperty]
-        private int _size;
-        [ObservableProperty]
-        private int _dexterity;
-        [ObservableProperty]
-        private int _appearance;
-        [ObservableProperty]
-        private int _intelligence;
-        [ObservableProperty]
-        private int _power;
-        [ObservableProperty]
-        private int _education;
+        private bool _isPointBuyMethod;
 
-        private readonly Random _random = new();
+        [ObservableProperty]
+        private bool _isFreeformMethod;
+
+        [ObservableProperty]
+        private int _distributablePoints;
+
+        [ObservableProperty]
+        private string _pointBuyTitle = "Point Buy";
+
+        [ObservableProperty]
+        private string _pointBuyError;
+
+        public bool IsEditableMethod => IsPointBuyMethod || IsFreeformMethod;
+
+        partial void OnIsPointBuyMethodChanged(bool value)
+        {
+            OnPropertyChanged(nameof(IsEditableMethod));
+        }
+
+        partial void OnIsFreeformMethodChanged(bool value)
+        {
+            OnPropertyChanged(nameof(IsEditableMethod));
+        }
+        #endregion
+
+        #region Characteristic Properties
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(TotalPoints))]
+        private int _str;
+
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(TotalPoints))]
+        private int _con;
+
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(TotalPoints))]
+        private int _siz;
+
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(TotalPoints))]
+        private int _dex;
+
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(TotalPoints))]
+        private int _app;
+
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(TotalPoints))]
+        private int _int;
+
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(TotalPoints))]
+        private int _pow;
+
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(TotalPoints))]
+        private int _edu;
+
+        public int TotalPoints => Str + Con + Siz + Dex + App + Int + Pow + Edu;
+        #endregion
+
+        #region Derived Stat Properties
+        [ObservableProperty]
+        private int _hp;
+
+        [ObservableProperty]
+        private int _mp;
+
+        [ObservableProperty]
+        private int _sanity;
+
+        [ObservableProperty]
+        private int _luck;
+        #endregion
 
         public StatsViewModel(CharacterCreationService characterService)
         {
             _characterService = characterService;
-            _investigator = _characterService.CurrentInvestigator;
         }
 
-        #region Property Changed Handlers
-
-        partial void OnSelectedMethodChanged(string value)
+        public void Initialize()
         {
             _investigator = _characterService.CurrentInvestigator;
+            _selectedMethod = _characterService.SelectedMethod;
+            _isPulp = _characterService.IsPulp;
+            _coreStat = _characterService.SelectedCoreCharacteristic;
+            PointBuyError = string.Empty;
 
-            OnPropertyChanged(nameof(IsRollMode));
-            OnPropertyChanged(nameof(IsPointBuyMode));
-            OnPropertyChanged(nameof(IsFreeformMode));
+            IsRollMethod = _selectedMethod.Contains("Roll");
+            IsPointBuyMethod = _selectedMethod.Contains("PointBuy");
+            IsFreeformMethod = _selectedMethod.Contains("Freeform");
 
-            if (IsRollMode)
+            if (IsRollMethod)
             {
-                RollAllStats();
+                RollStats();
             }
-            else
+            else if (IsPointBuyMethod)
             {
                 InitializePointBuy();
             }
+            else if (IsFreeformMethod)
+            {
+                InitializeFreeform();
+            }
         }
 
-        private void UpdateAllocatedPoints()
+        #region Dice Rolling Logic
+        private int Roll1D6() => _random.Next(1, 7);
+        private int Roll2D6() => _random.Next(1, 7) + _random.Next(1, 7);
+        private int Roll3D6() => _random.Next(1, 7) + _random.Next(1, 7) + _random.Next(1, 7);
+
+        private int RollClassicStat() => Roll3D6() * 5;
+
+        private int RollClassicHighStat() => (Roll2D6() + 6) * 5;
+
+        private int RollPulpStat(string statName)
         {
-            if (IsRollMode) return;
-
-            int totalValue = Strength + Constitution + Size + Dexterity +
-                             Appearance + Intelligence + Power + Education;
-            TotalPointsAllocated = totalValue - _totalMinimumCost;
+            if (statName == _coreStat)
+            {
+                return (Roll1D6() + 13) * 5;
+            }
+            return (Roll2D6() + 6) * 5;
         }
-        partial void OnStrengthChanged(int value) => UpdateAllocatedPoints();
-        partial void OnConstitutionChanged(int value) => UpdateAllocatedPoints();
-        partial void OnSizeChanged(int value) => UpdateAllocatedPoints();
-        partial void OnDexterityChanged(int value) => UpdateAllocatedPoints();
-        partial void OnAppearanceChanged(int value) => UpdateAllocatedPoints();
-        partial void OnIntelligenceChanged(int value) => UpdateAllocatedPoints();
-        partial void OnPowerChanged(int value) => UpdateAllocatedPoints();
-        partial void OnEducationChanged(int value) => UpdateAllocatedPoints();
 
+        [RelayCommand]
+        private void RollStats()
+        {
+            if (_selectedMethod == "ClassicRoll")
+            {
+                Str = RollClassicStat();
+                Con = RollClassicStat();
+                Siz = RollClassicHighStat();
+                Dex = RollClassicStat();
+                App = RollClassicStat();
+                Int = RollClassicHighStat();
+                Pow = RollClassicStat();
+                Edu = RollClassicHighStat();
+            }
+            else if (_selectedMethod == "PulpRoll")
+            {
+                Str = RollPulpStat("STR");
+                Con = RollPulpStat("CON");
+                Siz = RollPulpStat("SIZ");
+                Dex = RollPulpStat("DEX");
+                App = RollPulpStat("APP");
+                Int = RollPulpStat("INT");
+                Pow = RollPulpStat("POW");
+                Edu = RollPulpStat("EDU");
+            }
+
+            CalculateDerivedStats();
+        }
+
+        [RelayCommand]
+        private void RerollStat(string statName)
+        {
+            if (!IsRollMethod) return;
+
+            if (_isPulp)
+            {
+                switch (statName)
+                {
+                    case "STR": Str = RollPulpStat("STR"); break;
+                    case "CON": Con = RollPulpStat("CON"); break;
+                    case "SIZ": Siz = RollPulpStat("SIZ"); break;
+                    case "DEX": Dex = RollPulpStat("DEX"); break;
+                    case "APP": App = RollPulpStat("APP"); break;
+                    case "INT": Int = RollPulpStat("INT"); break;
+                    case "POW": Pow = RollPulpStat("POW"); break;
+                    case "EDU": Edu = RollPulpStat("EDU"); break;
+                }
+            }
+            else
+            {
+                switch (statName)
+                {
+                    case "STR": Str = RollClassicStat(); break;
+                    case "CON": Con = RollClassicStat(); break;
+                    case "SIZ": Siz = RollClassicHighStat(); break;
+                    case "DEX": Dex = RollClassicStat(); break;
+                    case "APP": App = RollClassicStat(); break;
+                    case "INT": Int = RollClassicHighStat(); break;
+                    case "POW": Pow = RollClassicStat(); break;
+                    case "EDU": Edu = RollClassicHighStat(); break;
+                }
+            }
+        }
+
+        private void CalculateDerivedStats()
+        {
+            Mp = Pow / 5;
+            Sanity = Pow;
+
+            if (_isPulp)
+            {
+                Hp = (Con + Siz) / 5;
+                Luck = (Roll2D6() + 6) * 5;
+            }
+            else
+            {
+                Hp = (Con + Siz) / 10;
+                Luck = Roll3D6() * 5;
+            }
+        }
         #endregion
 
-        #region Point-Buy Logic
-
+        #region Point Buy Logic
         private void InitializePointBuy()
         {
-            if (SelectedMethod == "ClassicPointBuy")
+            PointBuyTitle = "Point Buy";
+            if (_isPulp)
             {
-                _minStr = _minCon = _minDex = _minApp = _minPow = 15;
-                _minSiz = _minInt = _minEdu = 40;
-                _totalMinimumCost = 195;
-                DistributablePointPool = 265;
+                Str = Con = Siz = Dex = App = Int = Pow = Edu = PULP_MIN;
+                DistributablePoints = 280; // 600 - (8 * 40)
             }
-            else if (SelectedMethod == "PulpPointBuy")
+            else
             {
-                _minStr = _minCon = _minSiz = _minDex = _minApp = _minInt = _minPow = _minEdu = 15;
-                _totalMinimumCost = 120;
-                DistributablePointPool = 430;
+                Str = CLASSIC_MIN_LOW; Con = CLASSIC_MIN_LOW; Dex = CLASSIC_MIN_LOW; App = CLASSIC_MIN_LOW; Pow = CLASSIC_MIN_LOW;
+                Siz = CLASSIC_MIN_HIGH; Int = CLASSIC_MIN_HIGH; Edu = CLASSIC_MIN_HIGH;
+                DistributablePoints = 280; // 460 - (5*15 + 3*40)
             }
-            else if (SelectedMethod == "Freeform")
-            {
-                _minStr = _minCon = _minSiz = _minDex = _minApp = _minInt = _minPow = _minEdu = 0;
-                _totalMinimumCost = 0;
-                DistributablePointPool = 1500;
-            }
+            CalculateDerivedStats();
+        }
 
-            ResetStatsToMinimum();
+        private void InitializeFreeform()
+        {
+            PointBuyTitle = "Freeform";
+            Str = Con = Siz = Dex = App = Int = Pow = Edu = 0;
+            DistributablePoints = 500;
+            CalculateDerivedStats();
         }
 
         [RelayCommand]
-        private void ModifyStatFixed(string parameter)
+        private void ModifyStat(string parameter)
         {
-            if (string.IsNullOrEmpty(parameter)) return;
+            PointBuyError = string.Empty;
             var parts = parameter.Split(',');
-            string characteristic = parts[0];
+            if (parts.Length != 2) return;
+
+            var statName = parts[0];
             if (!int.TryParse(parts[1], out int amount)) return;
 
-            if (amount > 0 && RemainingPoints < amount)
+            if (IsPointBuyMethod && amount > 0 && DistributablePoints < amount)
             {
+                PointBuyError = "Not enough points remaining.";
                 return;
             }
 
-            int maxStat = (SelectedMethod == "Freeform") ? int.MaxValue : 90;
-
-            switch (characteristic)
+            if (amount > 0 && DistributablePoints < amount)
             {
-                case "Strength": Strength = Math.Clamp(Strength + amount, _minStr, maxStat); break;
-                case "Constitution": Constitution = Math.Clamp(Constitution + amount, _minCon, maxStat); break;
-                case "Size": Size = Math.Clamp(Size + amount, _minSiz, maxStat); break;
-                case "Dexterity": Dexterity = Math.Clamp(Dexterity + amount, _minDex, maxStat); break;
-                case "Appearance": Appearance = Math.Clamp(Appearance + amount, _minApp, maxStat); break;
-                case "Intelligence": Intelligence = Math.Clamp(Intelligence + amount, _minInt, maxStat); break;
-                case "Power": Power = Math.Clamp(Power + amount, _minPow, maxStat); break;
-                case "Education": Education = Math.Clamp(Education + amount, _minEdu, maxStat); break;
-            }
-        }
-
-        [RelayCommand]
-        private void ResetStatsToMinimum()
-        {
-            Strength = _minStr;
-            Constitution = _minCon;
-            Size = _minSiz;
-            Dexterity = _minDex;
-            Appearance = _minApp;
-            Intelligence = _minInt;
-            Power = _minPow;
-            Education = _minEdu;
-        }
-
-        #endregion
-
-        #region Dice Rolling Logic (Restored)
-
-        private int Roll3D6x5() => (_random.Next(1, 7) + _random.Next(1, 7) + _random.Next(1, 7)) * 5;
-        private int Roll2D6Plus6x5() => (_random.Next(1, 7) + _random.Next(1, 7) + 6) * 5;
-        private int Roll3D6Plus3x5() => (_random.Next(1, 7) + _random.Next(1, 7) + _random.Next(1, 7) + 3) * 5;
-
-        [RelayCommand]
-        private void RollAllStats()
-        {
-            Strength = Roll3D6x5();
-            Constitution = Roll3D6x5();
-            Dexterity = Roll3D6x5();
-            Appearance = Roll3D6x5();
-            Power = Roll3D6x5();
-            Intelligence = Roll2D6Plus6x5();
-            Size = Roll2D6Plus6x5();
-            Education = Roll3D6Plus3x5();
-        }
-        [RelayCommand]
-        private void RollStrength() => Strength = Roll3D6x5();
-        [RelayCommand]
-        private void RollConstitution() => Constitution = Roll3D6x5();
-        [RelayCommand]
-        private void RollSize() => Size = Roll2D6Plus6x5();
-        [RelayCommand]
-        private void RollDexterity() => Dexterity = Roll3D6x5();
-        [RelayCommand]
-        private void RollAppearance() => Appearance = Roll3D6x5();
-        [RelayCommand]
-        private void RollIntelligence() => Intelligence = Roll2D6Plus6x5();
-        [RelayCommand]
-        private void RollPower() => Power = Roll3D6x5();
-        [RelayCommand]
-        private void RollEducation() => Education = Roll3D6Plus3x5();
-
-        #endregion
-
-        #region Navigation Commands
-
-        private void SaveStatsToCharacter()
-        {
-            if (_investigator == null)
-            {
-                Shell.Current.DisplayAlert("Error", "Character data was lost. Please go back and restart.", "OK");
+                PointBuyError = "Not enough points remaining.";
                 return;
             }
 
-            if (_investigator.Characteristics == null)
+            int currentValue = statName switch
             {
-                _investigator.Characteristics = new Characteristics();
+                "STR" => Str,
+                "CON" => Con,
+                "SIZ" => Siz,
+                "DEX" => Dex,
+                "APP" => App,
+                "INT" => Int,
+                "POW" => Pow,
+                "EDU" => Edu,
+                _ => 0
+            };
+            int newValue = currentValue + amount;
+
+            if (IsFreeformMethod)
+            {
+                if (newValue < 0) { PointBuyError = "Cannot go below 0."; return; }
+            }
+            else if (IsPointBuyMethod)
+            {
+                if (newValue > CLASSIC_MAX) { PointBuyError = $"Cannot exceed {CLASSIC_MAX}."; return; }
+
+                if (_isPulp)
+                {
+                    if (newValue < PULP_MIN) { PointBuyError = $"Cannot go below {PULP_MIN}."; return; }
+                }
+                else // Classic Point Buy
+                {
+                    int min = (statName == "SIZ" || statName == "INT" || statName == "EDU") ? CLASSIC_MIN_HIGH : CLASSIC_MIN_LOW;
+                    if (newValue < min) { PointBuyError = $"Cannot go below {min}."; return; }
+                }
             }
 
-            _investigator.Characteristics.Strength = Strength;
-            _investigator.Characteristics.Constitution = Constitution;
-            _investigator.Characteristics.Size = Size;
-            _investigator.Characteristics.Dexterity = Dexterity;
-            _investigator.Characteristics.Appearance = Appearance;
-            _investigator.Characteristics.Intelligence = Intelligence;
-            _investigator.Characteristics.Power = Power;
-            _investigator.Characteristics.Education = Education;
+            switch (statName)
+            {
+                case "STR": Str = newValue; break;
+                case "CON": Con = newValue; break;
+                case "SIZ": Siz = newValue; break;
+                case "DEX": Dex = newValue; break;
+                case "APP": App = newValue; break;
+                case "INT": Int = newValue; break;
+                case "POW": Pow = newValue; break;
+                case "EDU": Edu = newValue; break;
+            }
+
+            // Update distributable points
+            if (IsPointBuyMethod)
+            {
+                DistributablePoints -= amount;
+            }
         }
 
+        // recalculate derived stats on every change.
+        partial void OnStrChanged(int value) => CalculateDerivedStats();
+        partial void OnConChanged(int value) => CalculateDerivedStats();
+        partial void OnSizChanged(int value) => CalculateDerivedStats();
+        partial void OnDexChanged(int value) => CalculateDerivedStats();
+        partial void OnAppChanged(int value) => CalculateDerivedStats();
+        partial void OnIntChanged(int value) => CalculateDerivedStats();
+        partial void OnPowChanged(int value) => CalculateDerivedStats();
+        partial void OnEduChanged(int value) => CalculateDerivedStats();
+        #endregion
+
+        #region Navigation
         [RelayCommand]
-        private async Task GoToSkillsPage()
+        private async Task GoToNextPage()
         {
-            if (IsPointBuyMode && RemainingPoints != 0)
+            if (IsPointBuyMethod&& DistributablePoints != 0)
             {
-                await Shell.Current.DisplayAlert("Validation Error", $"You must allocate all {DistributablePointPool} distributable points. You have {RemainingPoints} points remaining.", "OK");
+                PointBuyError = $"You must allocate all {DistributablePoints} remaining points.";
                 return;
             }
 
             SaveStatsToCharacter();
-
             await Shell.Current.GoToAsync(nameof(OccupationPage));
         }
 
@@ -251,6 +368,28 @@ namespace CharactersOfCthulhu.ViewModels
             await Shell.Current.GoToAsync("..");
         }
 
+        private void SaveStatsToCharacter()
+        {
+            _investigator.Characteristics = new Characteristics
+            {
+                STR = this.Str,
+                CON = this.Con,
+                SIZ = this.Siz,
+                DEX = this.Dex,
+                APP = this.App,
+                INT = this.Int,
+                POW = this.Pow,
+                EDU = this.Edu
+            };
+
+            _investigator.MaxHitPoints = this.Hp;
+            _investigator.CurrentHitPoints = this.Hp;
+            _investigator.MaxMagicPoints = this.Mp;
+            _investigator.CurrentMagicPoints = this.Mp;
+            _investigator.MaxSanity = this.Sanity;
+            _investigator.CurrentSanity = this.Sanity;
+            _investigator.Luck = this.Luck;
+        }
         #endregion
     }
 }

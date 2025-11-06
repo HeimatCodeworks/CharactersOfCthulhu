@@ -1,5 +1,4 @@
 ﻿using CharactersOfCthulhu.Models;
-using System.Collections.Generic;
 
 namespace CharactersOfCthulhu.Repositories
 {
