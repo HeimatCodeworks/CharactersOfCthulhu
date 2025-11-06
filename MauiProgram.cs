@@ -44,6 +44,9 @@ public static class MauiProgram
         builder.Services.AddTransient<PulpOrClassicPage>();
         builder.Services.AddTransient<PulpOrClassicPageViewModel>();
 
+        builder.Services.AddTransient<ArchetypePage>();
+        builder.Services.AddTransient<ArchetypePageViewModel>();
+
         return builder.Build();
     }
 }

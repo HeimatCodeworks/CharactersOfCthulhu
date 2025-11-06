@@ -4,42 +4,78 @@
              xmlns:viewmodels="clr-namespace:CharactersOfCthulhu.ViewModels"
              x:DataType="viewmodels:MethodSelectionViewModel"
              x:Class="CharactersOfCthulhu.Views.MethodSelectionPage"
-             Title="Creation Method">
-    <VerticalStackLayout Spacing="10" Padding="20" VerticalOptions="Center">
-        <Label 
-            Text="Select Creation Method"
-            FontSize="24"
-            FontAttributes="Bold"
-            HorizontalOptions="Center" />
-        <Button 
-            Text="Back"
-            Command="{Binding GoBackCommand}"
-            Margin="0,20,0,0"
-            BackgroundColor="Gray" />
-        <Button 
-            Text="Classic (Roll Stats)"
-            Command="{Binding SelectMethodCommand}"
-            CommandParameter="ClassicRoll" />
+             Title="Select Stat Method">
 
-        <Button 
-            Text="Classic (Point-Buy)"
-            Command="{Binding SelectMethodCommand}"
-            CommandParameter="ClassicPointBuy" />
+    <Grid RowDefinitions="*,Auto">
 
-        <Button 
-            Text="Pulp (Roll Stats)"
-            Command="{Binding SelectMethodCommand}"
-            CommandParameter="PulpRoll" />
+        <ScrollView Grid.Row="0">
+            <VerticalStackLayout Padding="30" Spacing="15">
 
-        <Button 
-            Text="Pulp (Point-Buy)"
-            Command="{Binding SelectMethodCommand}"
-            CommandParameter="PulpPointBuy" />
+                <Label Text="Classic Methods"
+                       FontSize="22"
+                       FontAttributes="Bold"
+                       IsVisible="{Binding IsClassic}" />
 
-        <Button 
-            Text="Freeform (Manual Entry)"
-            Command="{Binding SelectMethodCommand}"
-            CommandParameter="Freeform" />
+                <Frame IsVisible="{Binding IsClassic}" Padding="0" CornerRadius="5" BorderColor="Gray">
+                    <Button Text="Classic (Roll)"
+                            Command="{Binding SelectMethodCommand}"
+                            CommandParameter="ClassicRoll"
+                            HeightRequest="60" />
+                </Frame>
 
-    </VerticalStackLayout>
+                <Frame IsVisible="{Binding IsClassic}" Padding="0" CornerRadius="5" BorderColor="Gray">
+                    <Button Text="Point Buy"
+                            Command="{Binding SelectMethodCommand}"
+                            CommandParameter="ClassicPointBuy"
+                            HeightRequest="60" />
+                </Frame>
+
+                <Frame IsVisible="{Binding IsClassic}" Padding="0" CornerRadius="5" BorderColor="Gray">
+                    <Button Text="Freeform"
+                            Command="{Binding SelectMethodCommand}"
+                            CommandParameter="ClassicFreeform"
+                            HeightRequest="60" />
+                </Frame>
+
+                <Label Text="Pulp Methods"
+                       FontSize="22"
+                       FontAttributes="Bold"
+                       IsVisible="{Binding IsPulp}" />
+
+                <Frame IsVisible="{Binding IsPulp}" Padding="0" CornerRadius="5" BorderColor="Gray">
+                    <Button Text="Classic (Roll)"
+                            Command="{Binding SelectMethodCommand}"
+                            CommandParameter="PulpRoll"
+                            HeightRequest="60" />
+                </Frame>
+
+                <Frame IsVisible="{Binding IsPulp}" Padding="0" CornerRadius="5" BorderColor="Gray">
+                    <Button Text="Point Buy"
+                            Command="{Binding SelectMethodCommand}"
+                            CommandParameter="PulpPointBuy"
+                            HeightRequest="60" />
+                </Frame>
+
+                <Frame IsVisible="{Binding IsPulp}" Padding="0" CornerRadius="5" BorderColor="Gray">
+                    <Button Text="Freeform"
+                            Command="{Binding SelectMethodCommand}"
+                            CommandParameter="PulpFreeform"
+                            HeightRequest="60" />
+                </Frame>
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <Grid Grid.Row="1" 
+              ColumnDefinitions="*,*"
+              Padding="10">
+
+            <Button Grid.Column="0"
+                    Text="Back"
+                    Command="{Binding GoBackCommand}"
+                    HorizontalOptions="Start" />
+
+        </Grid>
+    </Grid>
+
 </ContentPage>

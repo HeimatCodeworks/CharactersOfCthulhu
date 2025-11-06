@@ -10,9 +10,18 @@ namespace CharactersOfCthulhu.ViewModels
     {
         private readonly CharacterCreationService _characterService;
 
+        [ObservableProperty]
+        private bool _isPulp;
+
+        [ObservableProperty]
+        private bool _isClassic;
+
         public MethodSelectionViewModel(CharacterCreationService characterService)
         {
             _characterService = characterService;
+
+            IsPulp = _characterService.IsPulp;
+            IsClassic = !_characterService.IsPulp;
         }
 
         [RelayCommand]

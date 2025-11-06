@@ -10,6 +10,10 @@ namespace CharactersOfCthulhu.Services
 
         public Era SelectedEra { get; set; } = Era.Classic1920s;
 
+        public PulpArchetype SelectedArchetype { get; set; }
+
+        public string SelectedCoreCharacteristic { get; set; }
+
         public void StartCreationProcess(string methodName)
         {
             SelectedMethod = methodName;

@@ -55,9 +55,15 @@ namespace CharactersOfCthulhu.ViewModels
 
             _characterService.IsPulp = selectedStyle.IsPulp;
 
-            await Shell.Current.GoToAsync(nameof(MethodSelectionPage));
+            if (selectedStyle.IsPulp)
+            {
+                await Shell.Current.GoToAsync(nameof(ArchetypePage));
+            }
+            else
+            {
+                await Shell.Current.GoToAsync(nameof(MethodSelectionPage));
+            }
         }
-
         [RelayCommand]
         private async Task GoBack()
         {
