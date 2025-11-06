@@ -20,14 +20,6 @@ namespace CharactersOfCthulhu.ViewModels
         [ObservableProperty]
         private ArchetypeViewModel _selectedArchetype;
 
-        [ObservableProperty]
-        private bool _showCoreCharacteristicChoice;
-
-        [ObservableProperty]
-        private ObservableCollection<string> _coreCharacteristicChoices;
-
-        [ObservableProperty]
-        private string _selectedCoreCharacteristic;
 
         public ArchetypePageViewModel(CharacterCreationService characterService)
         {
@@ -46,26 +38,7 @@ namespace CharactersOfCthulhu.ViewModels
         {
             foreach (var vm in Archetypes)
             {
-                vm.IsExpanded = (vm == value);
-            }
-
-            if (value == null)
-            {
-                ShowCoreCharacteristicChoice = false;
-                return;
-            }
-
-            var options = value.Archetype.CoreCharacteristicOptions;
-            if (options.Count > 1)
-            {
-                CoreCharacteristicChoices = new ObservableCollection<string>(options);
-                SelectedCoreCharacteristic = options.First();
-                ShowCoreCharacteristicChoice = true;
-            }
-            else
-            {
-                ShowCoreCharacteristicChoice = false;
-                SelectedCoreCharacteristic = options.FirstOrDefault();
+                vm.HandleSelection(vm == value);
             }
         }
 
@@ -79,7 +52,7 @@ namespace CharactersOfCthulhu.ViewModels
             }
 
             _characterService.SelectedArchetype = SelectedArchetype.Archetype;
-            _characterService.SelectedCoreCharacteristic = SelectedCoreCharacteristic;
+            _characterService.SelectedCoreCharacteristic = SelectedArchetype.SelectedCoreCharacteristic;
 
             await Shell.Current.GoToAsync(nameof(MethodSelectionPage));
         }
